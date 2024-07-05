@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Education {
+  educationId String      @id @db.VarChar(255)
+  degree      String?     @db.VarChar(255)
+  major       String?     @db.VarChar(255)
+  school      String?     @db.VarChar(255)
+  startDate   String?     @db.VarChar(255)
+  endDate     String?     @db.VarChar(255)
+  grade       String?     @db.VarChar(255)
+  resumeId    String?     @db.VarChar(255)
+  UserResume  UserResume? @relation(fields: [resumeId], references: [resumeId], onDelete: Cascade, onUpdate: NoAction, map: "Education_ibfk_1")
+
+  @@index([school], map: "education_school_index")
+  @@index([resumeId], map: "resumeId")
+}
+
+model MercorUserSkills {
+  userId      String      @db.VarChar(255)
+  skillId     String      @db.VarChar(255)
+  isPrimary   Boolean     @default(false)
+  order       Int         @default(0)
+  MercorUsers MercorUsers @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "MercorUserSkills_ibfk_1")
+  Skills      Skills      @relation(fields: [skillId], references: [skillId], onDelete: Cascade, onUpdate: NoAction, map: "MercorUserSkills_ibfk_2")
+
+  @@id([userId, skillId])
+  @@index([skillId], map: "skillId")
+}
+
+model MercorUsers {
+  userId                 String             @id @db.VarChar(255)
+  email                  String             @unique(map: "email") @db.VarChar(255)
+  name                   String?            @db.VarChar(255)
+  phone                  String?            @db.VarChar(255)
+  residence              Json?
+  profilePic             String?            @db.Text
+  createdAt              DateTime           @default(now()) @db.DateTime(0)
+  lastLogin              DateTime           @default(now()) @db.DateTime(0)
+  notes                  String?            @db.Text
+  referralCode           String?            @unique(map: "referralCode") @default(dbgenerated("(uuid())")) @db.VarChar(255)
+  isGptEnabled           Boolean            @default(false)
+  preferredRole          String?            @db.VarChar(255)
+  fullTimeStatus         String?            @db.VarChar(255)
+  workAvailability       String?            @db.VarChar(255)
+  fullTimeSalaryCurrency String?            @db.VarChar(255)
+  fullTimeSalary         String?            @db.VarChar(255)
+  partTimeSalaryCurrency String?            @db.VarChar(255)
+  partTimeSalary         String?            @db.VarChar(255)
+  fullTime               Boolean            @default(false)
+  fullTimeAvailability   Int?
+  partTime               Boolean            @default(false)
+  partTimeAvailability   Int?
+  w8BenUrl               Json?
+  tosUrl                 String?            @db.Text
+  policyUrls             Json?
+  isPreVetted            Boolean            @default(false)
+  isActive               Boolean            @default(false)
+  isComplete             Boolean            @default(false)
+  summary                String?            @db.Text
+  preVettedAt            DateTime?          @db.DateTime(0)
+  MercorUserSkills       MercorUserSkills[]
+  UserResume             UserResume?
+}
+
+model PersonalInformation {
+  personalInformationId String      @id @db.VarChar(255)
+  name                  String?     @db.VarChar(255)
+  location              Json?
+  email                 Json?
+  phone                 Json?
+  resumeId              String?     @db.VarChar(255)
+  UserResume            UserResume? @relation(fields: [resumeId], references: [resumeId], onDelete: Cascade, onUpdate: NoAction, map: "PersonalInformation_ibfk_1")
+
+  @@index([resumeId], map: "resumeId")
+}
+
+model Skills {
+  skillId          String             @id @db.VarChar(255)
+  skillName        String             @db.VarChar(255)
+  skillValue       String             @unique(map: "skillValue") @db.VarChar(255)
+  MercorUserSkills MercorUserSkills[]
+}
+
+model UserResume {
+  resumeId             String                @id @db.VarChar(255)
+  url                  String?               @db.Text
+  filename             String                @db.VarChar(255)
+  createdAt            DateTime              @default(now()) @db.DateTime(0)
+  updatedAt            DateTime              @default(now()) @db.DateTime(0)
+  source               String                @default("platform") @db.VarChar(255)
+  ocrText              String?               @db.Text
+  ocrEmail             String?               @db.VarChar(255)
+  ocrGithubUsername    String?               @db.VarChar(255)
+  resumeBasedQuestions String?               @db.Text
+  userId               String?               @unique(map: "userId") @db.VarChar(255)
+  isInvitedToInterview Boolean               @default(false)
+  reminderTasksIds     Json?
+  Education            Education[]
+  PersonalInformation  PersonalInformation[]
+  MercorUsers          MercorUsers?          @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "UserResume_ibfk_1")
+  WorkExperience       WorkExperience[]
+}
+
+model WorkExperience {
+  workExperienceId String      @id @db.VarChar(255)
+  company          String?     @db.VarChar(255)
+  role             String?     @db.VarChar(255)
+  startDate        String?     @db.VarChar(255)
+  endDate          String?     @db.VarChar(255)
+  description      String?     @db.Text
+  locationCity     String?     @db.VarChar(255)
+  locationCountry  String?     @db.VarChar(255)
+  resumeId         String?     @db.VarChar(255)
+  UserResume       UserResume? @relation(fields: [resumeId], references: [resumeId], onDelete: Cascade, onUpdate: NoAction, map: "WorkExperience_ibfk_1")
+
+  @@index([resumeId], map: "resumeId")
+  @@index([company], map: "workExperience_company_index")
+}

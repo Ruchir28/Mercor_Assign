@@ -1,12 +1,14 @@
 import React from 'react';
-import { UserWithSkills } from '../App';
+import { UserWithSkills } from '../recoilstate';
 import defaultAvatar from "../../public/image.png";
+import { useNavigate } from 'react-router-dom';
 
 interface UserCardProps {
   user: UserWithSkills;
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
+  const navigate = useNavigate();
   return (
     <div className="w-full max-w-2xl mx-auto bg-white rounded-xl shadow-md overflow-hidden h-80 m-4">
       <div className="flex h-full">
@@ -70,7 +72,12 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
             </div>
           </div>
           <div className="mt-4">
-            <button className="w-full px-4 py-2 bg-indigo-500 text-white text-sm font-semibold rounded hover:bg-indigo-600">
+            <button 
+            className="w-full px-4 py-2 bg-indigo-500 text-white text-sm font-semibold rounded hover:bg-indigo-600"
+            onClick={() => {
+              navigate(`/user/${user.userId}`);
+            }}
+            >
               View profile
             </button>
           </div>

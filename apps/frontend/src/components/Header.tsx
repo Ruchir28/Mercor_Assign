@@ -1,65 +1,83 @@
 import React, { useState } from 'react';
-import mercorlogo from '../../public/mercor.png' // Adjust the path as needed
+import { FaSearch, FaSpinner } from 'react-icons/fa';
+import companyLogo from '../../public/mercor.png';
+import { useRecoilState } from 'recoil';
+import { filtersState } from '../recoilstate';
+import { config } from '../config';
 
-interface FilterProps {
-  onFilterChange: (filters: FilterState) => void;
+export interface FilterState {
+  skills: string[];
+  companies: string[];
+  educational_institutes: string[];
+  major: string[];
 }
 
-interface FilterState {
-  skills: string;
-  experience: string;
-  salaryRange: string;
-}
+const Header = () => {
+  const [searchString, setSearchString] = useState('');
+  const [filters, setFilters] = useRecoilState(filtersState);
+  const [isLoading, setIsLoading] = useState(false);
 
-const Header: React.FC<FilterProps> = ({ onFilterChange }) => {
-  const [filters, setFilters] = useState<FilterState>({
-    skills: '',
-    experience: '',
-    salaryRange: '',
-  });
+  const handleSearch = async () => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${config.SERVER_URL}/api/extract-filters`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ searchString }),
+      });
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    const newFilters = { ...filters, [name]: value };
-    setFilters(newFilters);
-    onFilterChange(newFilters);
+      if (!response.ok) {
+        throw new Error('Failed to extract filters');
+      }
+
+      const extractedFilters: FilterState = await response.json();
+      setFilters({
+        companies: extractedFilters.companies || [],
+        educational_institutes: extractedFilters.educational_institutes || [],
+        major: extractedFilters.major || [],
+        skills: extractedFilters.skills || []
+      });
+    } catch (error) {
+      console.error('Error extracting filters:', error);
+      // Handle error (e.g., show an error message to the user)
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <header className="bg-white shadow-md">
-      <div className="container py-4 flex items-center justify-between">
-        <img src={mercorlogo} alt="Company Logo" className="h-20 w-20" />
-        <div className="flex space-x-4">
-          <input
-            type="text"
-            name="skills"
-            placeholder="Skills"
-            value={filters.skills}
-            onChange={handleFilterChange}
-            className="border rounded px-2 py-1"
-          />
-          <select
-            name="experience"
-            value={filters.experience}
-            onChange={handleFilterChange}
-            className="border rounded px-2 py-1"
-          >
-            <option value="">Experience</option>
-            <option value="0-2">0-2 years</option>
-            <option value="3-5">3-5 years</option>
-            <option value="5+">5+ years</option>
-          </select>
-          <select
-            name="salaryRange"
-            value={filters.salaryRange}
-            onChange={handleFilterChange}
-            className="border rounded px-2 py-1"
-          >
-            <option value="">Salary Range</option>
-            <option value="0-50000">$0 - $50,000</option>
-            <option value="50000-100000">$50,000 - $100,000</option>
-            <option value="100000+">$100,000+</option>
-          </select>
+    <header className="bg-white shadow-md py-4 px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row items-center">
+          <div className="w-full sm:w-32 mb-4 sm:mb-0 sm:mr-8 flex justify-center sm:justify-start">
+            <img src={companyLogo} alt="Company Logo" className="h-16 sm:h-20 w-auto" />
+          </div>
+          <div className="flex-grow w-full">
+            <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center bg-white rounded-lg p-4">
+              <div className="flex-grow mr-0 sm:mr-4 mb-4 sm:mb-0">
+                <input
+                  type="text"
+                  value={searchString}
+                  onChange={(e) => setSearchString(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  placeholder="Enter skills, companies, institutes, or majors"
+                  className="w-full px-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  disabled={isLoading}
+                />
+              </div>
+              <button
+                onClick={handleSearch}
+                className={`w-full sm:w-auto bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 focus:outline-none ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                disabled={isLoading}
+              >
+                {isLoading ? <FaSpinner className="animate-spin" /> : <FaSearch />}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>

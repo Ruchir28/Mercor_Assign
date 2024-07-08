@@ -1,5 +1,4 @@
 // App.tsx
-import React from "react";
 import { RecoilRoot } from 'recoil';
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Home from "./Home";

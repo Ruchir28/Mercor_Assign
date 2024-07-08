@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { FaSearch, FaSpinner } from 'react-icons/fa';
 import companyLogo from '../../public/mercor.png';
 import { useRecoilState } from 'recoil';
@@ -14,7 +14,7 @@ export interface FilterState {
 
 const Header = () => {
   const [searchString, setSearchString] = useState('');
-  const [filters, setFilters] = useRecoilState(filtersState);
+  const [, setFilters] = useRecoilState(filtersState);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {

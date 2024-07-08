@@ -22,7 +22,7 @@ const Header = () => {
     
     setIsLoading(true);
     try {
-      const response = await fetch(`${config.SERVER_URL}/api/extract-filters`, {
+      const response = await fetch(`http://${config.SERVER_URL}/api/extract-filters`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

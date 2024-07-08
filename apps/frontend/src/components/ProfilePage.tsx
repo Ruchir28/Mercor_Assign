@@ -45,7 +45,7 @@ type MercorUser = Prisma.MercorUsersGetPayload<{
       const fetchUserData = async () => {
         setLoading(true);
         try {
-          const response = await fetch(`${config.SERVER_URL}/api/users/${userId}`).then(res => res.json());
+          const response = await fetch(`http://${config.SERVER_URL}/api/users/${userId}`).then(res => res.json());
           setUser(response);
           setError(null);
         } catch (err) {

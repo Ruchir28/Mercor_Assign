@@ -31,7 +31,7 @@ const Home = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${config.SERVER_URL}/api/search`, {
+      const response = await fetch(`http://${config.SERVER_URL}/api/search`, {
         method: "POST",
         body: JSON.stringify({
           page: isNewSearch ? "1" : pageCount.toString(),

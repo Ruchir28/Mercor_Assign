@@ -60,13 +60,13 @@ const Home = () => {
 
   useEffect(() => {
     const filtersChanged = JSON.stringify(filters) !== JSON.stringify(lastFetchedFilters);
-    if (filtersChanged || users.length === 0) {
+    if (filtersChanged) {
       fetchUsers(true);
     }
   }, [filters, lastFetchedFilters, users.length, fetchUsers]);
 
   return (
-    <div className="min-h-screen w-100 flex flex-col items-center justify-center bg-gray-100">
+    <div className="min-h-screen w-100 flex flex-col items-center bg-gray-100">
       <div className="w-100 flex flex-wrap justify-center">
         {users.map((user) => (
           <UserCard key={user.userId} user={user} />

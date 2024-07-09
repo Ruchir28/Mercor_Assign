@@ -18,7 +18,7 @@ const Header = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = async () => {
-    if (isLoading) return;
+    if (isLoading || searchString.length == 0) return;
     
     setIsLoading(true);
     try {
@@ -63,7 +63,7 @@ const Header = () => {
                   type="text"
                   value={searchString}
                   onChange={(e) => setSearchString(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  onKeyDown={(e) => {e.key === 'Enter' && handleSearch();}}
                   placeholder="Enter skills, companies, institutes, or majors"
                   className="w-full px-4 py-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   disabled={isLoading}
